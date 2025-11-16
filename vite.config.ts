@@ -1,4 +1,3 @@
-/// <reference types="node" />
 
 import { defineConfig } from 'vite';
 import react from '@vitejs/plugin-react';
@@ -11,11 +10,14 @@ export default defineConfig({
     rollupOptions: {
       input: {
         // Entry for the web preview
-        main: resolve(__dirname, 'index.html'),
+        // Fix: remove __dirname, as it's not available in ESM. Vite resolves from the project root.
+        main: resolve('index.html'),
         // Entry for the extension popup
-        popup: resolve(__dirname, 'popup.html'),
+        // Fix: remove __dirname, as it's not available in ESM. Vite resolves from the project root.
+        popup: resolve('popup.html'),
         // Entry for the content script
-        content: resolve(__dirname, 'src/content.ts'),
+        // Fix: remove __dirname, as it's not available in ESM. Vite resolves from the project root.
+        content: resolve('src/content.ts'),
       },
       output: {
         entryFileNames: (chunkInfo) => {
