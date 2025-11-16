@@ -21,19 +21,57 @@ const App: React.FC = () => {
   const [isLiveReviewActive, setIsLiveReviewActive] = useState(false);
   const [currentRepoUrl, setCurrentRepoUrl] = useState<string | null>(null);
 
-  // Effect to get the current tab URL and load initialization state from storage
+  const handleAnalyzePR = useCallback(async (diff: string) => {
+    if (!diff || diff.trim() === '') {
+      setError("Could not find a PR diff on this page. Navigate to the 'Files changed' tab of a pull request.");
+      setIsLoading(false);
+      return;
+    }
+    setIsLoading(true);
+    setError(null);
+    setWalkthroughSteps([]);
+    try {
+      const steps = await generateReviewWalkthrough(diff);
+      setWalkthroughSteps(steps);
+    } catch (err) {
+      setError('Failed to generate review. Please check the API key and try again.');
+      console.error(err);
+    } finally {
+      setIsLoading(false);
+    }
+  }, []);
+
+  const getDiffAndAnalyze = () => {
+    if (!IS_EXTENSION) return;
+    chrome.tabs.query({ active: true, currentWindow: true }, (tabs) => {
+      const tabId = tabs[0]?.id;
+      if (tabId) {
+        chrome.tabs.sendMessage(tabId, { type: 'GET_PR_DIFF' }, (response) => {
+          if (chrome.runtime.lastError) {
+            console.error(chrome.runtime.lastError.message);
+            setError("Could not get PR data. Refresh the page or ensure you're on a GitHub 'Files Changed' tab.");
+            return;
+          }
+          if (response?.diff) {
+            handleAnalyzePR(response.diff);
+          } else {
+            setError("Could not find a PR diff on this page. Navigate to the 'Files changed' tab.");
+          }
+        });
+      }
+    });
+  };
+
   useEffect(() => {
     if (IS_EXTENSION) {
       chrome.tabs.query({ active: true, currentWindow: true }, (tabs) => {
         const url = tabs[0]?.url;
         if (url) {
           setCurrentRepoUrl(url);
-          // Check storage to see if this repo is already initialized
           chrome.storage.local.get([url], (result) => {
             if (result[url]) {
               setIsInitialized(true);
-              // If initialized, automatically fetch the review
-              handleAnalyzePR();
+              getDiffAndAnalyze();
             }
           });
         }
@@ -41,34 +79,17 @@ const App: React.FC = () => {
     }
   }, []);
 
-
-  const handleAnalyzePR = useCallback(async () => {
-    setIsLoading(true);
-    setError(null);
-    setWalkthroughSteps([]);
-    try {
-      const steps = await generateReviewWalkthrough(MOCK_PR_DIFF);
-      setWalkthroughSteps(steps);
-    } catch (err) {
-      setError('Failed to generate review. Please try again.');
-      console.error(err);
-    } finally {
-      setIsLoading(false);
-    }
-  }, []);
-
   const handleInitRepo = () => {
     if (IS_EXTENSION && currentRepoUrl) {
-      // Persist initialized state for this URL in extension storage
       chrome.storage.local.set({ [currentRepoUrl]: true }, () => {
         console.log(`Repository ${currentRepoUrl} marked as initialized.`);
         setIsInitialized(true);
-        handleAnalyzePR();
+        getDiffAndAnalyze();
       });
     } else {
       // Web mock behavior
       setIsInitialized(true);
-      handleAnalyzePR();
+      handleAnalyzePR(MOCK_PR_DIFF);
     }
   };
 
