@@ -54,8 +54,11 @@ export const generateReviewWalkthrough = async (diff: string): Promise<Walkthrou
       },
     });
 
-    const resultText = response.text.trim();
-    const steps = JSON.parse(resultText);
+    const resultText = response.text;
+    if (!resultText) {
+      throw new Error("Received an empty response from the Gemini API.");
+    }
+    const steps = JSON.parse(resultText.trim());
     return steps;
 
   } catch (error) {

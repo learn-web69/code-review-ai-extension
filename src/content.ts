@@ -1,4 +1,4 @@
-// Fix: Add declaration for the 'chrome' extension API to fix TypeScript errors.
+// Fix: Add declaration for the 'chrome' extension API to fix TypeScript "Cannot find name 'chrome'" error.
 declare const chrome: any;
 
 console.log("AI Core Review Assistant content script loaded.");
@@ -13,7 +13,8 @@ interface ScrollToMessage {
 
 chrome.runtime.onMessage.addListener((
     message: ScrollToMessage, 
-    _sender: chrome.runtime.MessageSender, 
+    // Fix: Use 'any' type for sender to resolve "Cannot find namespace 'chrome'" error.
+    _sender: any, 
     sendResponse: (response: { success: boolean; message: string; }) => void
   ) => {
   if (message.type === 'SCROLL_TO_ELEMENT') {
