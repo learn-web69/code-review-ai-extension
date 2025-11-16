@@ -1,15 +1,11 @@
-
 import { GoogleGenAI, Type } from "@google/genai";
 import type { WalkthroughStep } from '../types';
-import { MOCK_WALKTHROUGH_STEPS } from '../constants';
 
 // This is a mocked version for the web preview.
 // In a real application, this would make a network request to the Gemini API.
 export const generateReviewWalkthrough = async (diff: string): Promise<WalkthroughStep[]> => {
-  console.log("Simulating Gemini API call with diff:", diff);
-
+  // Fix: Enable the actual Gemini API call
   // In a real implementation, you would use the Gemini API like this:
-  /*
   if (!process.env.API_KEY) {
     throw new Error("API_KEY environment variable not set");
   }
@@ -66,12 +62,4 @@ export const generateReviewWalkthrough = async (diff: string): Promise<Walkthrou
     console.error("Error calling Gemini API:", error);
     throw new Error("Failed to generate review from Gemini API.");
   }
-  */
-
-  // Mocked response for web preview
-  return new Promise((resolve) => {
-    setTimeout(() => {
-      resolve(MOCK_WALKTHROUGH_STEPS);
-    }, 1500);
-  });
 };

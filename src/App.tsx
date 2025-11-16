@@ -24,12 +24,12 @@ const App: React.FC = () => {
   // Effect to get the current tab URL and load initialization state from storage
   useEffect(() => {
     if (IS_EXTENSION) {
-      chrome.tabs.query({ active: true, currentWindow: true }, (tabs) => {
+      chrome.tabs.query({ active: true, currentWindow: true }, (tabs: any[]) => {
         const url = tabs[0]?.url;
         if (url) {
           setCurrentRepoUrl(url);
           // Check storage to see if this repo is already initialized
-          chrome.storage.local.get([url], (result) => {
+          chrome.storage.local.get([url], (result: { [key: string]: any; }) => {
             if (result[url]) {
               setIsInitialized(true);
               // If initialized, automatically fetch the review
@@ -74,7 +74,7 @@ const App: React.FC = () => {
 
   const handleStepClick = (step: WalkthroughStep) => {
     if (IS_EXTENSION) {
-      chrome.tabs.query({ active: true, currentWindow: true }, (tabs) => {
+      chrome.tabs.query({ active: true, currentWindow: true }, (tabs: any[]) => {
         if (tabs[0]?.id) {
           chrome.tabs.sendMessage(tabs[0].id, {
             type: 'SCROLL_TO_ELEMENT',
