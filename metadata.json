@@ -1,0 +1,5 @@
+{
+  "name": "AI Core Review Assistant",
+  "description": "An AI-powered assistant to generate code review walkthroughs for GitHub Pull Requests. This serves as a web mock and a foundation for a Chrome extension.",
+  "requestFramePermissions": []
+}
