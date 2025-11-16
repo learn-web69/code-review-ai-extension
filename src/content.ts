@@ -1,7 +1,7 @@
+console.log("AI Core Review Assistant content script loaded.");
+
 // Fix: Add declaration for the 'chrome' extension API to fix TypeScript errors.
 declare const chrome: any;
-
-console.log("AI Core Review Assistant content script loaded.");
 
 interface ScrollToMessage {
   type: 'SCROLL_TO_ELEMENT';
@@ -11,7 +11,11 @@ interface ScrollToMessage {
   };
 }
 
-chrome.runtime.onMessage.addListener((message: ScrollToMessage, sender, sendResponse) => {
+chrome.runtime.onMessage.addListener((
+    message: ScrollToMessage, 
+    _sender: chrome.runtime.MessageSender, 
+    sendResponse: (response: { success: boolean; message: string; }) => void
+  ) => {
   if (message.type === 'SCROLL_TO_ELEMENT') {
     const { file, line } = message.payload;
     console.log(`Received request to scroll to ${file}:${line}`);
