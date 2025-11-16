@@ -16,6 +16,7 @@
   "devDependencies": {
     "@google/genai": "^1.29.1",
     "@types/chrome": "^0.0.251",
+    "@types/node": "^20.11.20",
     "@types/react": "^18.2.37",
     "@types/react-dom": "^18.2.15",
     "@vitejs/plugin-react": "^4.2.0",
