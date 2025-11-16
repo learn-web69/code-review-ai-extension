@@ -1,3 +1,6 @@
+// Fix: Add declaration for the 'chrome' extension API to fix TypeScript errors.
+declare const chrome: any;
+
 console.log("AI Core Review Assistant content script loaded.");
 
 interface ScrollToMessage {
